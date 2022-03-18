@@ -1,0 +1,8 @@
+[package]
+name = "exact_css_xyz_matrices"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+num = "0.4.0"
+rgb_derivation = "0.2"
