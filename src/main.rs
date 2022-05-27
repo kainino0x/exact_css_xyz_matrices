@@ -38,7 +38,7 @@ fn print_matrix(header: &str, matrix: &[[Scalar; 3]; 3]) {
 
     println!("{}:", header);
     for row in formatted.iter() {
-        print!("  [");
+        print!("    [ ");
         for (idx, value) in row.iter().enumerate() {
             print!(
                 "{comma}{numer:>numer_len$} / {denom:>denom_len$}",
@@ -49,8 +49,24 @@ fn print_matrix(header: &str, matrix: &[[Scalar; 3]; 3]) {
                 denom_len = lengths[idx].1
             );
         }
-        println!("],");
+        println!(" ],");
     }
+}
+
+fn print_color_space_matrices(
+    name: &str,
+    white_xyz: &[Scalar; 3],
+    primaries_xy: &[Chromaticity; 3],
+) {
+    let matrix = rgb_derivation::matrix::calculate(white_xyz, primaries_xy).unwrap();
+    let inverse = rgb_derivation::matrix::inversed_copy(&matrix).unwrap();
+    let primaries_xyz = rgb_derivation::matrix::transposed_copy(&matrix);
+
+    println!("");
+    println!("{}", name);
+    print_matrix("  Primaries", &primaries_xyz);
+    print_matrix("  To XYZ", &matrix);
+    print_matrix("  From XYZ", &inverse);
 }
 
 fn main() {
@@ -61,36 +77,23 @@ fn main() {
     let d65_white_xyz = d65_white_xy.to_xyz();
     print_vector("D65 white point", &d65_white_xyz);
 
-    // srgb
-    {
-        let primaries_xy = [
+    print_color_space_matrices(
+        "srgb",
+        &d65_white_xyz,
+        &[
             chromaticity((64, 100), (33, 100)),
             chromaticity((30, 100), (60, 100)),
             chromaticity((15, 100), (6, 100)),
-        ];
+        ],
+    );
 
-        let matrix = rgb_derivation::matrix::calculate(&d65_white_xyz, &primaries_xy).unwrap();
-        let inverse = rgb_derivation::matrix::inversed_copy(&matrix).unwrap();
-        let primaries_xyz = rgb_derivation::matrix::transposed_copy(&matrix);
-
-        print_matrix("sRGB primaries", &primaries_xyz);
-        print_matrix("sRGB→XYZ", &matrix);
-        print_matrix("XYZ→sRGB", &inverse);
-    }
-    // display-p3
-    {
-        let primaries_xy = [
+    print_color_space_matrices(
+        "display-p3",
+        &d65_white_xyz,
+        &[
             chromaticity((68, 100), (32, 100)),
             chromaticity((265, 1000), (69, 100)),
             chromaticity((15, 100), (6, 100)),
-        ];
-
-        let matrix = rgb_derivation::matrix::calculate(&d65_white_xyz, &primaries_xy).unwrap();
-        let inverse = rgb_derivation::matrix::inversed_copy(&matrix).unwrap();
-        let primaries_xyz = rgb_derivation::matrix::transposed_copy(&matrix);
-
-        print_matrix("display-p3 primaries", &primaries_xyz);
-        print_matrix("display-p3→XYZ", &matrix);
-        print_matrix("XYZ→display-p3", &inverse);
-    }
+        ],
+    );
 }
