@@ -73,6 +73,10 @@ fn main() {
     // All definitions taken from CSS (different standards differ slightly)
     // https://www.w3.org/TR/css-color-4/#predefined
 
+    let d50_white_xy = chromaticity((3457, 10000), (3585, 10000));
+    let d50_white_xyz = d50_white_xy.to_xyz();
+    print_vector("D50 white point", &d50_white_xyz);
+
     let d65_white_xy = chromaticity((3127, 10000), (3290, 10000));
     let d65_white_xyz = d65_white_xy.to_xyz();
     print_vector("D65 white point", &d65_white_xyz);
@@ -81,9 +85,9 @@ fn main() {
         "srgb",
         &d65_white_xyz,
         &[
-            chromaticity((64, 100), (33, 100)),
-            chromaticity((30, 100), (60, 100)),
-            chromaticity((15, 100), (6, 100)),
+            chromaticity((640, 1000), (330, 1000)),
+            chromaticity((300, 1000), (600, 1000)),
+            chromaticity((150, 1000), (060, 1000)),
         ],
     );
 
@@ -91,9 +95,39 @@ fn main() {
         "display-p3",
         &d65_white_xyz,
         &[
-            chromaticity((68, 100), (32, 100)),
-            chromaticity((265, 1000), (69, 100)),
-            chromaticity((15, 100), (6, 100)),
+            chromaticity((680, 1000), (320, 1000)),
+            chromaticity((265, 1000), (690, 1000)),
+            chromaticity((150, 1000), (060, 1000)),
+        ],
+    );
+
+    print_color_space_matrices(
+        "a98-rgb",
+        &d65_white_xyz,
+        &[
+            chromaticity((6400, 10000), (3300, 10000)),
+            chromaticity((2100, 10000), (7100, 10000)),
+            chromaticity((1500, 10000), (0600, 10000)),
+        ],
+    );
+
+    print_color_space_matrices(
+        "prophoto-rgb",
+        &d50_white_xyz,
+        &[
+            chromaticity((734_699, 1_000_000), (265_301, 1_000_000)),
+            chromaticity((159_597, 1_000_000), (840_403, 1_000_000)),
+            chromaticity((036_598, 1_000_000), (000_105, 1_000_000)),
+        ],
+    );
+
+    print_color_space_matrices(
+        "rec2020",
+        &d65_white_xyz,
+        &[
+            chromaticity((708, 1000), (292, 1000)),
+            chromaticity((170, 1000), (797, 1000)),
+            chromaticity((131, 1000), (046, 1000)),
         ],
     );
 }
